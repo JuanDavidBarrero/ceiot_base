@@ -2,19 +2,39 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const {MongoClient} = require("mongodb");
 const PgMem = require("pg-mem");
+const mongoose = require('mongoose');
+const Device = require('./models/devices'); 
+
 
 const db = PgMem.newDb();
 
-    const render = require("./render.js");
+const render = require("./render.js");
 // Measurements database setup and access
 
-let database = null;
 const collectionName = "measurements";
 
 async function startDatabase() {
     const uri = "mongodb://localhost:27017/?maxPoolSize=20&w=majority";	
     const connection = await MongoClient.connect(uri, {useNewUrlParser: true});
     database = connection.db();
+}
+
+
+let database = null;
+
+async function starDB() {
+    try {
+        const uri = 'mongodb://192.168.1.46:27017/iot';
+        
+        await mongoose.connect(uri, {
+        });
+
+        database = mongoose.connection.db;
+        console.log('Base de datos persistente online conectada');
+    } catch (error) {
+        console.error('Error en la base de datos:', error);
+        throw new Error('Error en la base de datos');
+    }
 }
 
 async function getDatabase() {
@@ -37,9 +57,44 @@ const app = express();
 
 app.use(bodyParser.urlencoded({extended:false}));
 
+app.use(express.json());
+
 app.use(express.static('spa/static'));
 
 const PORT = 8080;
+
+app.post('/devices/measurement', async function (req, res) {
+    try {
+        const { MAC, pressure, temp, hum } = req.body;
+
+        console.log(req.body);
+        
+
+        if (!MAC || pressure === undefined || temp === undefined || hum === undefined) {
+            return res.status(400).send("Faltan campos requeridos.");
+        }
+
+        let device = await Device.findOne({ MAC: MAC });
+
+        if (device) {
+            device.datos.push({ pressure, temp, hum });
+        } else {
+            device = new Device({
+                MAC: MAC,
+                datos: [{ pressure, temp, hum }]
+            });
+        }
+
+        await device.save();
+
+        res.send("Medición recibida y guardada.");
+    } catch (error) {
+        console.error('Error al guardar la medición:', error);
+        res.status(500).send("Error al guardar la medición.");
+    }
+});
+
+
 
 app.post('/measurement', function (req, res) {
 -       console.log("device id    : " + req.body.id + " key         : " + req.body.key + " temperature : " + req.body.t + " humidity    : " + req.body.h);	
@@ -130,6 +185,9 @@ startDatabase().then(async() => {
     db.public.none("INSERT INTO users VALUES ('2','Beto','user123')");
 
     console.log("sql device database up");
+
+    await starDB();
+
 
     app.listen(PORT, () => {
         console.log(`Listening at ${PORT}`);
