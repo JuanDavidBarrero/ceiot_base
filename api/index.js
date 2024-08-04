@@ -48,7 +48,6 @@ app.post('/measurement', async function (req, res) {
         const device = await Device.findOne({ id: id });
 
         if (!device) {
-            console.log("Device not found.");
             return res.status(404).send("Device not found.");
         }
 
@@ -85,7 +84,6 @@ app.post('/device', async function (req, res) {
 
         const existingDevice = await Device.findOne({ id });
         if (existingDevice) {
-            console.log("Error: Device ID already exists.");
             
             return res.status(400).send("Error: Device ID already exists.");
         }
