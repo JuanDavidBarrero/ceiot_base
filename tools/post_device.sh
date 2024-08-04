@@ -1,1 +1,4 @@
-wget -O - --method=POST http://localhost:8080/device --body-data="id=$1&n=$2&k=$3"
+wget -O - --method=POST \
+     --header="Content-Type: application/json" \
+     --body-data='{"id":"00:1A:2B:3C:4D:5E","n":"deviceTest","k":"12345"}' \
+     http://localhost:8080/device
