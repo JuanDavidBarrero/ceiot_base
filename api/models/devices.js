@@ -1,26 +1,21 @@
-const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
 
-
-const DeviceSchema = new Schema({
-    MAC: {
-        type: String,
-        required: [true, 'La dirección MAC es obligatoria'],
-        unique: true 
-    },
-    datos: [
-        {
-            pressure: {
-                type: Number,
-            },
-            temp: {
-                type: Number,
-            },
-            hum: {
-                type: Number,
-            }
-        }
-    ]
+const deviceSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  key: {
+    type: String,
+    required: true
+  }
 });
 
+const Device = mongoose.model('Device', deviceSchema);
 
-module.exports = model('Device', DeviceSchema);
+module.exports = Device;
