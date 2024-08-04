@@ -1,0 +1,28 @@
+menu "Project Configuration"
+
+    config WIFI_SSID
+        string "WiFi SSID"
+        default ""
+        help
+            This option sets the SSID of the WiFi network to connect to.
+    
+    config WIFI_PASSWORD
+        string "WiFi Password"
+        default ""
+        help
+            This option sets the password of the WiFi network to connect to.
+    
+    config DEVICE_KEY
+        string "Device Key"
+        default ""
+        help
+            This option sets the key for the device.
+    
+    config DEVICE_NAME
+        string "Device Name"
+        default ""
+        help
+            This option sets the name of the device.
+    
+    endmenu
+    
