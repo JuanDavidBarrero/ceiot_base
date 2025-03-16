@@ -1,112 +1,52 @@
-# Ejercicio CiberKillChain - Ataque
+# Cyber Kill Chain - Ataque a Infraestructura LoRaWAN con Raspberry Pi y ESP32
 
+## Escenario
+El atacante busca comprometer el **Raspberry Pi 4**, que actúa como un gateway LoRaWAN, con el objetivo de interceptar, modificar o falsificar la comunicación entre los nodos **ESP32 con SX1307** y el servidor LoRaWAN privado.
 
-## Enunciado
+## Cyber Kill Chain 
 
-Armar una cyberkillchain usando técnicas de la matriz de Att&ck para un escenario relacionado al trabajo práctico de la carrera.
+### 1. Reconocimiento (Reconnaissance)
+- **T1595 - Active Scanning:**
+  - Escaneo de redes WiFi o Ethernet para identificar la Raspberry Pi y otros dispositivos en la red.
+  - Uso de `nmap` para detectar puertos abiertos (**22 SSH**, **1700 UDP LoRaWAN**).
+- **T1590.002 - Gather Victim Network Information:**
+  - Identificación de servidores LoRaWAN privados.
+  - Análisis de tráfico LoRaWAN con SDR (Software Defined Radio).
 
-## Instrucciones
+### 2. Armamento (Weaponization)
+- **T1203 - Exploitation for Client Execution:**
+  - Desarrollo de exploits dirigidos al software de **LoRa Packet Forwarder**.
+- **T1566 - Spearphishing:**
+  - Envío de correos de phishing a administradores para obtener credenciales SSH.
 
-### Crear un nuevo documento en esta carpeta con el nombre entrega.md y las siguientes secciones:
+### 3. Entrega (Delivery)
+- **T1071.001 - Application Layer Protocol (Web Protocols):**
+  - Uso de un servidor web malicioso para entregar un payload que explote vulnerabilidades en Debian o en la configuración del gateway.
+- **T1104 - Multi-Stage Channels:**
+  - Explotación combinada de SSH y LoRa para obtener acceso persistente.
 
- * (# Alumno) Alumno
- * (# Sistema víctima) Muy breve descripción del trabajo práctico con link si hay
- * (# Objetivo)
- * (# Resolución)
- * (## Reconnaissance)
- * (## Weaponization)
- * etc...
+### 4. Explotación (Exploitation)
+- **T1133 - External Remote Services:**
+  - Ataques de fuerza bruta o credenciales predeterminadas (`usuario: pi`) para acceder por **SSH (puerto 22)**.
+- **T1210 - Exploitation of Remote Services:**
+  - Explotación de vulnerabilidades en **LoRa Packet Forwarder** para tomar control del gateway.
 
-## Alguna indicaciones útiles
+### 5. Instalación (Installation)
+- **T1547 - Boot or Logon Autostart Execution:**
+  - Modificación de archivos de arranque en la Raspberry Pi para ejecutar código malicioso en cada reinicio.
+- **T1072 - Software Deployment Tools:**
+  - Uso de herramientas legítimas (`apt`, `wget`) para descargar malware persistente.
 
-Debe haber un objetivo para el ataque, algunas ideas inspiradoras:
+### 6. Comando y Control (Command & Control - C2)
+- **T1573 - Encrypted Channel:**
+  - Establecimiento de un túnel SSH inverso para mantener control remoto sobre la Raspberry Pi.
+- **T1102 - Web Service:**
+  - Uso de servicios como Telegram o Discord para recibir comandos.
 
- * Obtener información con algún tipo de valor.
- * Alguna variante extorsiva de ransomware.
- * Usar de plataforma para atacar a otros, ya sea por ancho de banda, anonimización o como desplazamiento lateral hacia un objetivo más interesante.
- * Usar la plataforma para extraerle valor como criptominado o almacenamiento de información ilegal.
- * Sabotear la plataforma a favor de la competencia, tipo stuxnet.
-
-El escenario debe asumir el sistema ya funcionando en el futuro.
-
-Debe ser en primera persona, es el punto de vista del atacante.
-
-Para cada etapa, si hay varias medidas posibles, ordenar dejando para lo último lo que se va a hacer en el siguiente paso.
-
-Es bien visto relacionar los recursos de ataque con las técnicas de ATT&CK o https://cwe.mitre.org/
-
-No vale colapsar pasos. Puede haber un paso para el cual no corresponda nada. El ataque puede ser en etapas, siendo la acción sobre los objetivos un segundo ciclo embebido, por ejemplo cuando se obtienen credenciales y al acceder adentro se hace un nuevo ataque contra el objetivo final.
-
-
-Es recomendable hacer dos o tres pasadas, en la primera la idea, en las siguientes refinamientos especificando las técnicas.
-PURO ATAQUE, nada de andar pensando cómo corregir nada.
-
-
-### Ejemplo adaptado a un juego de guerra inventado
-
-Las alternativas están en este ejemplo a modo ilustrativo, no deben haber alternativas en la entrega.
-
-* Objetivo del ataque: inhabilitar sin destruir el puerto enemigo con vistas a posteriormente tomarlo.
-
-* Reconnaissance
-  - Imagen satelital identifica una pista de aterrizaje.
-  - Espías dicen que por el puerto entra el combustible.
-  - Espías locales dicen que la playa cercana no tiene buena vigilancia.
-  - Espías locales dicen que el bosque cercano no tiene buena vigilancia.
-
-* Weaponization (con alternativas de ejemplo)
-  - **Decido** preparar un equipo de comandos de sabotage.
-  - **Decido** preparar un equipo de comandos de sabotage con gomones de desembarco y un submarino para desembarcar en la playa cercana que no tiene buena vigilancia. (mejor)
-  - **Decido** preparar un equipo de comandos de sabotage, gomones de desembarco y un submarino para desembarcar en la playa cercana que no tiene buena vigilancia. (mucho mejor)
-  - **Decido** preparar un equipo de comandos de sabotage con equipo de comuicaciones Super High TeraHertz Radio que el adversario no puede detectar, gomones de desembarco y un submarino para desembarcar en la playa cercana que no tiene buena vigilancia. (muchísimo mejor)
-  - **Puedo** *preparar un equipo de comandos de sabotage paracaidistas*
-  - **Puedo** *preparar un bombardeo al puerto.*
-  - **Puedo** *preparar la invasión directamente.*
-  
-* Delivery
-  - Envío al equipo de sabotage a la playa cercana en submarino.
-  - Envío al equipo de sabotage a la playa cercana en submarino y gomones de desembarco (mejor)
-  
-* Exploit (con alternativas de ejemplo)
-  - El equipo logra desembarcar sin incidentes en la playa.
-  - El equipo logra desembarcar sin incidentes en la playa por la falta de vigilancia.
-  
-* Installation (con alternativas de ejemplo)
-  - El equipo se hace pasar por una compañia de circo como camuflaje. (si es porque el equipo encuentra una compañía de circo no hace falta que esté en Weaponization)
-  - El equipo se esconde en un bosque cercano
-
-* Command & Control
-  - **Decido** utilizar Super High TeraHertz Radio que el adversario no puede detectar.
-  - **Puedo** *utilizar palomas mensajeras.*
-  
-* Actions on Objectives
-  - El equipo de comandos provoca daños menores en las cañerías.
-  - El equipo de comandos coloca minas en el puerto dejando un camino para el desembarco.
-
-#### Una leve variante para contemplar un ataque en etapas
-
-* Actions on Objectives
-  * Reconnaissance
-    - El equipo disfrazado de payasos revisa las instalaciones para elegir los mejores puntos de ataque.
-
-  * Weaponization
-    - El equipo prepara cargas controladas por cables para su activación remota.
-
-  * Delivery
-    - El equipo se hace pasar por mantenimiento urbano y accede al puerto.
-
-  * Exploit
-    - El equipo instala las cargas en los lugares apropiados.
-
-  * Command & Control
-    - Se utilizarán cables para detonar las cargas
-
-  * Actions on Objectives
-    - Se activan la cargas y provocan daños menores en las cañerías.
-
-
-  
-
-
-  
-
+### 7. Acciones sobre Objetivos (Actions on Objectives)
+- **T1020 - Automated Exfiltration:**
+  - Captura de paquetes LoRa y envío a un servidor de ataque para análisis.
+- **T1485 - Data Destruction:**
+  - Eliminación de logs en la Raspberry Pi para ocultar el ataque.
+- **T1496 - Resource Hijacking:**
+  - Uso de la Raspberry Pi como **relay malicioso** para interceptar y modificar la comunicación LoRa.
