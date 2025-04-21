@@ -4,6 +4,11 @@
 
 Las redes **LoRaWAN** (Long Range Wide Area Network) son utilizadas para conectar dispositivos IoT en grandes áreas con bajo consumo de energía. Estas redes suelen emplear **cifrado AES-128** para proteger la comunicación entre los nodos y el servidor, pero aún pueden ser vulnerables a diversos ataques si no se implementan adecuadas medidas de seguridad.
 
+
+## Objetivo
+
+El propósito de este análisis es demostrar cómo un atacante podría interceptar los datos transmitidos por dispositivos finales LoRaWAN (basados en ESP32 con chip SX1307) o tomar control del gateway (en este caso, un Raspberry Pi 4) para redirigir el tráfico a servidores maliciosos o acceder a las claves de descifrado almacenadas en el dispositivo. A través del modelo Cyber Kill Chain, se ejemplificará cómo se puede comprometer la infraestructura, manipular las comunicaciones y exponer las debilidades en la implementación de seguridad de una red LoRaWAN privada.
+
 ### Posibles vulnerabilidades en LoRaWAN
 1. **Ataques de repetición**: Un atacante puede capturar paquetes LoRa y retransmitirlos para ejecutar comandos falsos.
 2. **Compromiso del gateway**: Si un atacante obtiene acceso al Raspberry Pi que actúa como gateway, puede manipular el tráfico LoRaWAN.
