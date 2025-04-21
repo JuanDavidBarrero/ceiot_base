@@ -1,41 +1,79 @@
 
 # Defensa Contra Ataques en Infraestructuras LoRaWAN
 
-Este documento describe posibles ataques a infraestructuras basadas en LoRaWAN y cómo defenderse utilizando el modelo **Cyber Kill Chain**. También se incluyen imágenes sugeridas para cada fase y fragmentos de código útil para implementar medidas de seguridad.
+Este documento describe posibles ataques a infraestructuras basadas en LoRaWAN y cómo defenderse utilizando el modelo **Cyber Kill Chain**. A continuación, se presenta una defensa progresiva desde el impacto final (fase 7) hasta la detección inicial (fase 1). También se incluyen imágenes sugeridas y fragmentos de código útil.
 
 ---
 
-## 1. Reconocimiento (Reconnaissance)
+## 7. Acciones sobre Objetivos (Actions on Objectives)
 
-En esta fase, el atacante recolecta información del objetivo, como direcciones IP públicas, servicios expuestos o dispositivos conectados (por ejemplo, gateways LoRaWAN).
+Una vez dentro, el atacante puede alterar datos, interrumpir servicios o exfiltrar información.
 
-![Escaneo de red de gateway LoRaWAN](https://tse3.mm.bing.net/th?id=OIP.yDcNpLjJqSKuYYcelxf4QgHaEd&pid=Api)
+![Manipulación de paquetes LoRaWAN](https://tse3.mm.bing.net/th?id=OIP.KIShdpMpEWUDlkaCb8Rm-gHaE_&pid=Api)
 
 ### Medidas de defensa
 
-- **Firewall** para bloquear escaneos de red comunes:
+- Monitorizar el tráfico de red:
 
 ```bash
-# Bloquear intentos de escaneo de puertos
-iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
-iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+# Capturar paquetes LoRaWAN (puerto 1700)
+sudo tcpdump -i wlan0 port 1700
+```
+
+- Asegurar integridad y cifrado de datos con TLS y autenticación mutua.
+
+---
+
+## 6. Comando y Control (C2)
+
+El malware se comunica con el servidor del atacante para recibir instrucciones.
+
+### Imagen sugerida
+
+Diagrama mostrando conexión entre el gateway y un servidor externo de C2.
+
+### Medidas de defensa
+
+- Revisar conexiones salientes sospechosas:
+
+```bash
+netstat -tnp
+```
+
+- Usar `ufw` o `iptables` para limitar tráfico saliente a puertos específicos.
+
+---
+
+## 5. Instalación (Installation)
+
+El atacante instala software malicioso para obtener persistencia (backdoors, scripts).
+
+### Imagen sugerida
+
+Un diagrama de instalación de rootkit/backdoor silencioso tras explotación.
+
+### Medidas de defensa
+
+- Verificar archivos de inicio y cronjobs sospechosos:
+
+```bash
+cat /etc/rc.local
+crontab -l
 ```
 
 ---
 
-## 2. Armamento (Weaponization)
+## 4. Explotación (Exploitation)
 
-El atacante crea una carga maliciosa diseñada para explotar una vulnerabilidad específica del gateway o red.
-
-![Creación de malware para IoT](https://tse3.mm.bing.net/th?id=OIP.KIShdpMpEWUDlkaCb8Rm-gHaE_&pid=Api)
+Una vez que el malware llega al sistema, se explota una vulnerabilidad para obtener control.
 
 ### Medidas de defensa
 
-- Usar herramientas como `rkhunter` para detectar rootkits o malware en el sistema:
+- Mantener el sistema actualizado:
 
 ```bash
-sudo apt-get install rkhunter
-sudo rkhunter --check
+sudo apt-get update
+sudo apt-get upgrade
 ```
 
 ---
@@ -67,76 +105,38 @@ sudo systemctl restart fail2ban
 
 ---
 
-## 4. Explotación (Exploitation)
+## 2. Armamento (Weaponization)
 
-Una vez que el malware llega al sistema, se explota una vulnerabilidad para obtener control.
+El atacante crea una carga maliciosa diseñada para explotar una vulnerabilidad específica del gateway o red.
+
+![Creación de malware para IoT](https://tse3.mm.bing.net/th?id=OIP.KIShdpMpEWUDlkaCb8Rm-gHaE_&pid=Api)
 
 ### Medidas de defensa
 
-- Mantener el sistema actualizado:
+- Usar herramientas como `rkhunter` para detectar rootkits o malware en el sistema:
 
 ```bash
-sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get install rkhunter
+sudo rkhunter --check
 ```
 
 ---
 
-## 5. Instalación (Installation)
+## 1. Reconocimiento (Reconnaissance)
 
-El atacante instala software malicioso para obtener persistencia (backdoors, scripts).
+En esta fase, el atacante recolecta información del objetivo, como direcciones IP públicas, servicios expuestos o dispositivos conectados (por ejemplo, gateways LoRaWAN).
 
-### Imagen sugerida
-
-Un diagrama de instalación de rootkit/backdoor silencioso tras explotación.
+![Escaneo de red de gateway LoRaWAN](https://tse3.mm.bing.net/th?id=OIP.yDcNpLjJqSKuYYcelxf4QgHaEd&pid=Api)
 
 ### Medidas de defensa
 
-- Verificar archivos de inicio y cronjobs sospechosos:
+- **Firewall** para bloquear escaneos de red comunes:
 
 ```bash
-cat /etc/rc.local
-crontab -l
+# Bloquear intentos de escaneo de puertos
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
 ```
-
----
-
-## 6. Comando y Control (C2)
-
-El malware se comunica con el servidor del atacante para recibir instrucciones.
-
-### Imagen sugerida
-
-Diagrama mostrando conexión entre el gateway y un servidor externo de C2.
-
-### Medidas de defensa
-
-- Revisar conexiones salientes sospechosas:
-
-```bash
-netstat -tnp
-```
-
-- Usar `ufw` o `iptables` para limitar tráfico saliente a puertos específicos.
-
----
-
-## 7. Acciones sobre Objetivos (Actions on Objectives)
-
-Una vez dentro, el atacante puede alterar datos, interrumpir servicios o exfiltrar información.
-
-![Manipulación de paquetes LoRaWAN](https://tse3.mm.bing.net/th?id=OIP.KIShdpMpEWUDlkaCb8Rm-gHaE_&pid=Api)
-
-### Medidas de defensa
-
-- Monitorizar el tráfico de red:
-
-```bash
-# Capturar paquetes LoRaWAN (puerto 1700)
-sudo tcpdump -i wlan0 port 1700
-```
-
-- Asegurar integridad y cifrado de datos con TLS y autenticación mutua.
 
 ---
 
@@ -146,6 +146,4 @@ sudo tcpdump -i wlan0 port 1700
 - Usar autenticación por clave pública para SSH.
 - Registrar logs de acceso e integrarlos con un SIEM si es posible.
 - Establecer listas blancas de IP si el gateway se administra remotamente.
-
----
 
